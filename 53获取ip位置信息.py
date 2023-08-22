@@ -31,6 +31,7 @@ if __name__ == "__main__":
             print("Organization:", location_data.get("org", "N/A"))
         else:
             print("Unable to retrieve location information.")
-        
+        print("----------------------------------------------------------------")
         # 等待1秒
         time.sleep(1)
+
