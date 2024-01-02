@@ -3,7 +3,7 @@ import time
 import logging
 
 # 初始化日志记录器
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(message)s')
 
 # 内嵌配置
 API_ENDPOINTS = {
@@ -17,14 +17,14 @@ def get_ip_location(ip_address):
     try:
         response = requests.get(f"{API_ENDPOINTS['IP_INFO']}/{ip_address}/json")
         response.raise_for_status()
-        return response.json()
+        data = response.json()
+        return {k: data.get(k, 'N/A') for k in ['ip', 'hostname', 'city', 'region', 'country', 'loc', 'org']}
     except requests.RequestException as e:
         logging.error(f"获取IP位置信息时出错: {e}")
         return None
 
 def check_ip_security(ip_address):
     """检查IP地址的安全性"""
-    # 示例功能，可以扩展为实际的安全检查
     return "Safe" if ip_address.startswith("192.") else "Unsafe"
 
 def test_network_latency():
@@ -47,23 +47,34 @@ def get_current_ip():
         logging.error(f"获取当前IP地址时出错: {e}")
         return None
 
+def print_location_data(location_data):
+    for key, value in location_data.items():
+        logging.info(f"{key.capitalize()}: {value}")
+
 if __name__ == "__main__":
-    while True:  # 添加无限循环
+    while True:
         ip_address = get_current_ip()
         if ip_address:
-            logging.info(f"当前IP地址: {ip_address}")
+            logging.info("当前IP地址信息:")
+            logging.info(f"IP地址: {ip_address}")
+            print()
 
             location_data = get_ip_location(ip_address)
             if location_data:
-                logging.info(f"IP地址位置信息: {location_data}")
+                logging.info("IP地址位置信息:")
+                print_location_data(location_data)
+                print()
 
             security_status = check_ip_security(ip_address)
             logging.info(f"IP地址安全检查: {security_status}")
+            print()
 
             latency = test_network_latency()
             if latency is not None:
                 logging.info(f"网络延迟: {latency:.2f}秒")
+                print()
         else:
             logging.error("无法获取当前IP地址。")
+
         print('----------------------------------------------------------------')
-        time.sleep(2)  # 每2秒循环一次
+        time.sleep(2)
