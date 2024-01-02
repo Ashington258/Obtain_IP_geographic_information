@@ -1,19 +1,21 @@
 import requests
 import time
 import logging
-from configparser import ConfigParser
 
 # 初始化日志记录器
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
-# 读取配置文件
-config = ConfigParser()
-config.read('config.ini')
+# 内嵌配置
+API_ENDPOINTS = {
+    "IP_INFO": "https://ipinfo.io",
+    "CURRENT_IP": "https://api64.ipify.org?format=json",
+    "PING_ENDPOINT": "http://www.google.com"
+}
 
 def get_ip_location(ip_address):
     """获取IP地址的地理位置信息"""
     try:
-        response = requests.get(f"{config['API']['IP_INFO']}/{ip_address}/json")
+        response = requests.get(f"{API_ENDPOINTS['IP_INFO']}/{ip_address}/json")
         response.raise_for_status()
         return response.json()
     except requests.RequestException as e:
@@ -29,7 +31,7 @@ def test_network_latency():
     """测试网络延迟"""
     try:
         start_time = time.time()
-        requests.get(config['API']['PING_ENDPOINT'])
+        requests.get(API_ENDPOINTS['PING_ENDPOINT'])
         return time.time() - start_time
     except requests.RequestException as e:
         logging.error(f"网络延迟测试失败: {e}")
@@ -38,7 +40,7 @@ def test_network_latency():
 def get_current_ip():
     """获取当前IP地址"""
     try:
-        response = requests.get(config['API']['CURRENT_IP'])
+        response = requests.get(API_ENDPOINTS['CURRENT_IP'])
         response.raise_for_status()
         return response.json().get("ip")
     except requests.RequestException as e:
@@ -64,4 +66,4 @@ if __name__ == "__main__":
         else:
             logging.error("无法获取当前IP地址。")
         print('----------------------------------------------------------------')
-        time.sleep(2)  # 每60秒循环一次
+        time.sleep(2)  # 每2秒循环一次
