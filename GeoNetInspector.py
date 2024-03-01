@@ -28,26 +28,46 @@ def check_ip_security(ip_address):
     return "Safe" if ip_address.startswith("192.") else "Unsafe"
 
 def test_network_latency():
-    """测试网络延迟"""
+    """
+    Tests the network latency by making an HTTP GET request to a known endpoint and measuring the time it takes to receive a response.
+
+    Returns:
+        The network latency, or None if the test failed.
+    """
     try:
         start_time = time.time()
         requests.get(API_ENDPOINTS['PING_ENDPOINT'])
         return time.time() - start_time
     except requests.RequestException as e:
-        logging.error(f"网络延迟测试失败: {e}")
+        logging.error(f"Network latency test failed: {e}")
         return None
 
-def get_current_ip():
-    """获取当前IP地址"""
+def get_current_ip() -> str:
+    """
+    This function uses the requests library to make an HTTP GET request to the
+    API endpoint 'https://api64.ipify.org?format=json' and returns the IP address
+    as a string. If the request fails, the function logs the error using the
+    logging module and returns None.
+    """
     try:
         response = requests.get(API_ENDPOINTS['CURRENT_IP'])
         response.raise_for_status()
         return response.json().get("ip")
     except requests.RequestException as e:
-        logging.error(f"获取当前IP地址时出错: {e}")
+        logging.error(f"Error getting current IP: {e}")
         return None
 
-def print_location_data(location_data):
+def print_location_data(location_data: dict):
+    """
+    This function prints the location data in a readable format.
+
+    Args:
+        location_data (dict): The location data to be printed.
+
+    Returns:
+        None
+
+    """
     for key, value in location_data.items():
         logging.info(f"{key.capitalize()}: {value}")
 
